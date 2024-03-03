@@ -1,7 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 'use client'
 
 import { useId, useState } from 'react'
+
 import { useActions, useAIState, useUIState } from 'ai/rsc'
+
 import { formatNumber } from '@/lib/utils'
 
 import type { AI } from '../../app/action'
@@ -15,10 +23,11 @@ export function Purchase({
 	name: string
 	price: number
 }) {
-	const [value, setValue] = useState(defaultAmount || 100)
+	const [value, setValue] = useState(defaultAmount ?? 100)
 	const [purchasingUI, setPurchasingUI] = useState<null | React.ReactNode>(null)
 	const [history, setHistory] = useAIState<typeof AI>()
 	const [, setMessages] = useUIState<typeof AI>()
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const { confirmPurchase } = useActions()
 
 	// Unique identifier for this UI component.

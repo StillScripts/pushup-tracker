@@ -1,16 +1,17 @@
 'use client'
 
-import { useState, useRef, useEffect, useId } from 'react'
-import { scaleLinear } from 'd3-scale'
-import { subMonths, format } from 'date-fns'
-import { useResizeObserver } from 'usehooks-ts'
+import { useEffect, useId, useRef, useState } from 'react'
+
 import { useAIState } from 'ai/rsc'
+import { scaleLinear } from 'd3-scale'
+import { format, subMonths } from 'date-fns'
+import { useResizeObserver } from 'usehooks-ts'
 
 import type { AI } from '../../app/action'
 
 export function Stock({ name = 'DOGE', price = 12.34, delta = 1 }) {
 	const [history, setHistory] = useAIState<typeof AI>()
-	const [selectedDuration, setSelectedDuration] = useState('6M')
+
 	const id = useId()
 
 	const [priceAtTime, setPriceAtTime] = useState({

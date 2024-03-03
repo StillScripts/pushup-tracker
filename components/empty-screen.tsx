@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/button'
 import { ExternalLink } from '@/components/external-link'
+import { Button } from '@/components/ui/button'
 import { IconArrowRight } from '@/components/ui/icons'
 
 const exampleMessages = [

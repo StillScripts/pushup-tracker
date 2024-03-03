@@ -1,12 +1,12 @@
 import Link from 'next/link'
 
+import { Button } from '@/components/ui/button'
 import {
 	IconGitHub,
 	IconSeparator,
 	IconSparkles,
 	IconVercel
 } from '@/components/ui/icons'
-import { Button } from '@/components/ui/button'
 
 export async function Header() {
 	return (
