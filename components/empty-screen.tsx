@@ -4,6 +4,10 @@ import { IconArrowRight } from '@/components/ui/icons'
 
 const exampleMessages = [
 	{
+		heading: 'What are some popular exercises?',
+		message: 'What are some popular exercises?'
+	},
+	{
 		heading: 'What are the trending stocks?',
 		message: 'What are the trending stocks?'
 	},

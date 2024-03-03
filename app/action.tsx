@@ -19,6 +19,12 @@ import { EventsSkeleton } from '@/components/llm-stocks/events-skeleton'
 import { StockSkeleton } from '@/components/llm-stocks/stock-skeleton'
 import { StocksSkeleton } from '@/components/llm-stocks/stocks-skeleton'
 import {
+	Card,
+	CardDescription,
+	CardHeader,
+	CardTitle
+} from '@/components/ui/card'
+import {
 	formatNumber,
 	runAsyncFnWithoutBlocking,
 	runOpenAICompletion,
@@ -114,6 +120,25 @@ async function submitUserMessage(content: string) {
 		<BotMessage className="items-center">{spinner}</BotMessage>
 	)
 
+	const original = `\
+	You are a stock trading conversation bot and you can help users buy stocks, step by step. You can also recommend physical exercises such as push-ups.
+	You and the user can discuss stock prices and the user can adjust the amount of stocks they want to buy, or place an order, in the UI.
+	
+	Messages inside [] means that it's a UI element or a user event. For example:
+	- "[Price of AAPL = 100]" means that an interface of the stock price of AAPL is shown to the user.
+	- "[User has changed the amount of AAPL to 10]" means that the user has changed the amount of AAPL to 10 in the UI.
+	
+	If the user requests purchasing a stock, call \`show_stock_purchase_ui\` to show the purchase UI.
+	If the user just wants the price, call \`show_stock_price\` to show the price.
+	If you want to show trending stocks, call \`list_stocks\`.
+	If you want to show events, call \`get_events\`.
+	If the user wants to sell stock, or complete another impossible task, respond that you are a demo and cannot do that.
+	Additionally, you can suggest recommended exercises to users if they ask for it.
+	If you want to list exercises, call \`list_exercises\`.
+	Besides that, you can also chat with users and do some calculations if needed.
+	
+	`
+
 	const completion = runOpenAICompletion(openai, {
 		model: 'gpt-3.5-turbo',
 		stream: true,
@@ -121,20 +146,9 @@ async function submitUserMessage(content: string) {
 			{
 				role: 'system',
 				content: `\
-You are a stock trading conversation bot and you can help users buy stocks, step by step.
-You and the user can discuss stock prices and the user can adjust the amount of stocks they want to buy, or place an order, in the UI.
-
-Messages inside [] means that it's a UI element or a user event. For example:
-- "[Price of AAPL = 100]" means that an interface of the stock price of AAPL is shown to the user.
-- "[User has changed the amount of AAPL to 10]" means that the user has changed the amount of AAPL to 10 in the UI.
-
-If the user requests purchasing a stock, call \`show_stock_purchase_ui\` to show the purchase UI.
-If the user just wants the price, call \`show_stock_price\` to show the price.
-If you want to show trending stocks, call \`list_stocks\`.
-If you want to show events, call \`get_events\`.
-If the user wants to sell stock, or complete another impossible task, respond that you are a demo and cannot do that.
-
-Besides that, you can also chat with users and do some calculations if needed.`
+				You are a personal trainer. People may ask you for recommendations about certain physical exercises. 
+				If you want to list exercises, call \`list_exercises\`.
+`
 			},
 			...aiState.get().map((info: any) => ({
 				role: info.role,
@@ -143,6 +157,23 @@ Besides that, you can also chat with users and do some calculations if needed.`
 			}))
 		],
 		functions: [
+			{
+				name: 'list_exercises',
+				description:
+					'List three popular exercises that are helpful for building strength, fitness, or other physical attributes that the user wants to improve.',
+				parameters: z.object({
+					exercises: z.array(
+						z.object({
+							name: z.string().describe('The name of the exercise'),
+							description: z
+								.string()
+								.describe(
+									'A brief summary of the exercise and body parts involved'
+								)
+						})
+					)
+				})
+			},
 			{
 				name: 'show_stock_price',
 				description:
@@ -225,6 +256,8 @@ Besides that, you can also chat with users and do some calculations if needed.`
 
 		await sleep(1000)
 
+		console.log(stocks)
+
 		reply.done(
 			<BotCard>
 				<Stocks stocks={stocks} />
@@ -240,6 +273,49 @@ Besides that, you can also chat with users and do some calculations if needed.`
 			}
 		])
 	})
+
+	completion.onFunctionCall(
+		'list_exercises',
+		async ({
+			exercises
+		}: {
+			exercises: { name: string; description: string }[]
+		}) => {
+			reply.update(
+				<BotCard>
+					<StocksSkeleton />
+				</BotCard>
+			)
+
+			await sleep(1000)
+
+			console.log(exercises)
+
+			reply.done(
+				<BotCard>
+					<div className="flex flex-wrap gap-4 ">
+						{exercises.map(exercise => (
+							<Card key={exercise.name} className="w-full max-w-[360px]">
+								<CardHeader>
+									<CardTitle>{exercise.name}</CardTitle>
+									<CardDescription>{exercise.description}</CardDescription>
+								</CardHeader>
+							</Card>
+						))}
+					</div>
+				</BotCard>
+			)
+
+			aiState.done([
+				...aiState.get(),
+				{
+					role: 'function',
+					name: 'list_exercises',
+					content: JSON.stringify(exercises)
+				}
+			])
+		}
+	)
 
 	completion.onFunctionCall('get_events', async ({ events }) => {
 		reply.update(
