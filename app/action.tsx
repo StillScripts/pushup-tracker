@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { createAI, createStreamableUI, getMutableAIState } from 'ai/rsc'
 import OpenAI from 'openai'
 import { z } from 'zod'
@@ -25,7 +28,7 @@ import {
 import 'server-only'
 
 const openai = new OpenAI({
-	apiKey: process.env.OPENAI_API_KEY || ''
+	apiKey: process.env.OPENAI_API_KEY ?? ''
 })
 
 async function confirmPurchase(symbol: string, price: number, amount: number) {

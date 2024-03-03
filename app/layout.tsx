@@ -1,13 +1,16 @@
 import type { Metadata } from 'next'
+
+import { Analytics } from '@vercel/analytics/react'
 import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
-import { Analytics } from '@vercel/analytics/react'
-import { Toaster } from '@/components/ui/toaster'
-import './globals.css'
 
-import { AI } from './action'
 import { Header } from '@/components/header'
 import { Providers } from '@/components/providers'
+import { Toaster } from '@/components/ui/toaster'
+
+import { AI } from './action'
+
+import './globals.css'
 
 const meta = {
 	title: 'AI RSC Demo',

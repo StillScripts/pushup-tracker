@@ -1,4 +1,8 @@
-export function ChatList({ messages }: { messages: { display: string }[] }) {
+export function ChatList({
+	messages
+}: {
+	messages: { id: number; display: React.ReactNode }[]
+}) {
 	if (!messages.length) {
 		return null
 	}

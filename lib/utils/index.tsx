@@ -1,9 +1,15 @@
-import { ToolDefinition } from '@/lib/utils/tool-definition'
+/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { OpenAIStream } from 'ai'
-import type OpenAI from 'openai'
-import zodToJsonSchema from 'zod-to-json-schema'
 import { type ClassValue, clsx } from 'clsx'
+import type OpenAI from 'openai'
 import { twMerge } from 'tailwind-merge'
+import zodToJsonSchema from 'zod-to-json-schema'
+
+import { type ToolDefinition } from '@/lib/utils/tool-definition'
 
 const consumeStream = async (stream: ReadableStream) => {
 	const reader = stream.getReader()
@@ -27,9 +33,10 @@ export function runOpenAICompletion<
 	type FunctionNames =
 		T['functions'] extends Array<any> ? T['functions'][number]['name'] : never
 
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	let onTextContent: (text: string, isFinal: boolean) => void = () => {}
 
-	let onFunctionCall: Record<string, (args: Record<string, any>) => void> = {}
+	const onFunctionCall: Record<string, (args: Record<string, any>) => void> = {}
 
 	const { functions, ...rest } = params
 
@@ -51,9 +58,9 @@ export function runOpenAICompletion<
 				{
 					async experimental_onFunctionCall(functionCallPayload) {
 						hasFunction = true
-						onFunctionCall[
-							functionCallPayload.name as keyof typeof onFunctionCall
-						]?.(functionCallPayload.arguments as Record<string, any>)
+						onFunctionCall[functionCallPayload.name]?.(
+							functionCallPayload.arguments as Record<string, any>
+						)
 					},
 					onToken(token) {
 						text += token

@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { type z } from 'zod'
 
 /**
  * A tool definition contains all information required for a language model to generate tool calls.

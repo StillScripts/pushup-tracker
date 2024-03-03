@@ -1,9 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
 import Textarea from 'react-textarea-autosize'
 
-import { useActions, useAIState, useUIState } from 'ai/rsc'
+import { useActions, useUIState } from 'ai/rsc'
 
 import { ChatList } from '@/components/chat-list'
 import { EmptyScreen } from '@/components/empty-screen'
