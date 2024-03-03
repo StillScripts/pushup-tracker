@@ -7,7 +7,7 @@ import { scaleLinear } from 'd3-scale'
 import { format, subMonths } from 'date-fns'
 import { useResizeObserver } from 'usehooks-ts'
 
-import type { AI } from '../../app/action'
+import type { AI } from '../../app/(server)/chat'
 
 export function Stock({ name = 'DOGE', price = 12.34, delta = 1 }) {
 	const [history, setHistory] = useAIState<typeof AI>()

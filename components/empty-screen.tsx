@@ -4,16 +4,16 @@ import { IconArrowRight } from '@/components/ui/icons'
 
 const exampleMessages = [
 	{
-		heading: 'What are the trending stocks?',
-		message: 'What are the trending stocks?'
+		heading: 'What are some popular exercises?',
+		message: 'What are some popular exercises?'
 	},
 	{
-		heading: "What's the stock price of AAPL?",
-		message: "What's the stock price of AAPL?"
+		heading: 'Record 3 sets of 20 Push-ups',
+		message: 'Record 3 sets of 20 Push-ups'
 	},
 	{
-		heading: "I'd like to buy 10 shares of MSFT",
-		message: "I'd like to buy 10 shares of MSFT"
+		heading: 'Record 2 sets of 30 Calf-raises',
+		message: 'Record 2 sets of 30 Calf-raises'
 	}
 ]
 
@@ -26,11 +26,11 @@ export function EmptyScreen({
 		<div className="mx-auto max-w-2xl px-4">
 			<div className="mb-4 rounded-lg border bg-background p-8">
 				<h1 className="mb-2 text-lg font-semibold">
-					Welcome to AI SDK 3.0 Generative UI demo!
+					Welcome to AI Personal Trainer!
 				</h1>
 				<p className="mb-2 leading-normal text-muted-foreground">
-					This is a demo of an interactive financial assistant. It can show you
-					stocks, tell you their prices, and even help you buy shares.
+					You can get information about popular exercises and record your own
+					exercise progress.
 				</p>
 				<p className="mb-2 leading-normal text-muted-foreground">
 					The demo is built with{' '}
@@ -39,15 +39,6 @@ export function EmptyScreen({
 						Vercel AI SDK
 					</ExternalLink>
 					.
-				</p>
-				<p className="mb-2 leading-normal text-muted-foreground">
-					It uses{' '}
-					<ExternalLink href="https://vercel.com/blog/ai-sdk-3-generative-ui">
-						React Server Components
-					</ExternalLink>{' '}
-					to combine text with UI generated as output of the LLM. The UI state
-					is synced through the SDK so the model is aware of your interactions
-					as they happen.
 				</p>
 				<p className="leading-normal text-muted-foreground">Try an example:</p>
 				<div className="mb-4 mt-4 flex flex-col items-start space-y-2">
@@ -67,7 +58,7 @@ export function EmptyScreen({
 				</div>
 			</div>
 			<p className="text-center text-[0.8rem] leading-normal text-muted-foreground">
-				Note: This is not real financial advice.
+				Note: This is not professional health advice.
 			</p>
 		</div>
 	)

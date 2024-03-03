@@ -26,7 +26,7 @@ import { toast } from '@/components/ui/use-toast'
 import { ChatScrollAnchor } from '@/lib/hooks/chat-scroll-anchor'
 import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
 
-import { type AI } from './action'
+import { type AI } from './(server)/chat'
 
 export default function Page() {
 	const [messages, setMessages] = useUIState<typeof AI>()

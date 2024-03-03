@@ -8,7 +8,7 @@ import { Header } from '@/components/header'
 import { Providers } from '@/components/providers'
 import { Toaster } from '@/components/ui/toaster'
 
-import { AI } from './action'
+import { AI } from './(server)/chat'
 
 import './globals.css'
 
