@@ -1,5 +1,3 @@
-import { ExerciseSetFormCard } from './forms/exercise-set-form'
-
 export function ChatList({
 	messages
 }: {
@@ -16,7 +14,6 @@ export function ChatList({
 					{message.display}
 				</div>
 			))}
-			<ExerciseSetFormCard />
 		</div>
 	)
 }

@@ -5,18 +5,14 @@ import { createAI, createStreamableUI, getMutableAIState } from 'ai/rsc'
 import OpenAI from 'openai'
 import { z } from 'zod'
 
+import { exerciseSetFormSchema } from '@/app/(server)/routers/exercise-sets'
+import { ExerciseSetFormCard } from '@/components/forms/exercise-set-form'
 import {
 	BotCard,
 	BotMessage,
-	Events,
-	Purchase,
 	spinner,
-	Stock,
-	Stocks,
 	SystemMessage
 } from '@/components/llm-stocks'
-import { EventsSkeleton } from '@/components/llm-stocks/events-skeleton'
-import { StockSkeleton } from '@/components/llm-stocks/stock-skeleton'
 import { StocksSkeleton } from '@/components/llm-stocks/stocks-skeleton'
 import {
 	Card,
@@ -120,25 +116,6 @@ async function submitUserMessage(content: string) {
 		<BotMessage className="items-center">{spinner}</BotMessage>
 	)
 
-	const original = `\
-	You are a stock trading conversation bot and you can help users buy stocks, step by step. You can also recommend physical exercises such as push-ups.
-	You and the user can discuss stock prices and the user can adjust the amount of stocks they want to buy, or place an order, in the UI.
-	
-	Messages inside [] means that it's a UI element or a user event. For example:
-	- "[Price of AAPL = 100]" means that an interface of the stock price of AAPL is shown to the user.
-	- "[User has changed the amount of AAPL to 10]" means that the user has changed the amount of AAPL to 10 in the UI.
-	
-	If the user requests purchasing a stock, call \`show_stock_purchase_ui\` to show the purchase UI.
-	If the user just wants the price, call \`show_stock_price\` to show the price.
-	If you want to show trending stocks, call \`list_stocks\`.
-	If you want to show events, call \`get_events\`.
-	If the user wants to sell stock, or complete another impossible task, respond that you are a demo and cannot do that.
-	Additionally, you can suggest recommended exercises to users if they ask for it.
-	If you want to list exercises, call \`list_exercises\`.
-	Besides that, you can also chat with users and do some calculations if needed.
-	
-	`
-
 	const completion = runOpenAICompletion(openai, {
 		model: 'gpt-3.5-turbo',
 		stream: true,
@@ -147,7 +124,9 @@ async function submitUserMessage(content: string) {
 				role: 'system',
 				content: `\
 				You are a personal trainer. People may ask you for recommendations about certain physical exercises. 
+				They might also record exercise sessions, for example, I did 3 sets of push-ups and 15 reps in each set.
 				If you want to list exercises, call \`list_exercises\`.
+				If you want to record an exercise session, call \`record_exercise_set\`.
 `
 			},
 			...aiState.get().map((info: any) => ({
@@ -175,48 +154,11 @@ async function submitUserMessage(content: string) {
 				})
 			},
 			{
-				name: 'show_stock_price',
+				name: 'record_exercise_set',
 				description:
-					'Get the current stock price of a given stock or currency. Use this to show the price to the user.',
+					'Record the title of an exercise, and the number of sets and reps a user has done of that exercise. The date should default to today if it is not specified. If they do not specific the number of sets, then default to 1',
 				parameters: z.object({
-					symbol: z
-						.string()
-						.describe(
-							'The name or symbol of the stock or currency. e.g. DOGE/AAPL/USD.'
-						),
-					price: z.number().describe('The price of the stock.'),
-					delta: z.number().describe('The change in price of the stock')
-				})
-			},
-			{
-				name: 'show_stock_purchase_ui',
-				description:
-					'Show price and the UI to purchase a stock or currency. Use this if the user wants to purchase a stock or currency.',
-				parameters: z.object({
-					symbol: z
-						.string()
-						.describe(
-							'The name or symbol of the stock or currency. e.g. DOGE/AAPL/USD.'
-						),
-					price: z.number().describe('The price of the stock.'),
-					numberOfShares: z
-						.number()
-						.describe(
-							'The **number of shares** for a stock or currency to purchase. Can be optional if the user did not specify it.'
-						)
-				})
-			},
-			{
-				name: 'list_stocks',
-				description: 'List three imaginary stocks that are trending.',
-				parameters: z.object({
-					stocks: z.array(
-						z.object({
-							symbol: z.string().describe('The symbol of the stock'),
-							price: z.number().describe('The price of the stock'),
-							delta: z.number().describe('The change in price of the stock')
-						})
-					)
+					exerciseSet: exerciseSetFormSchema
 				})
 			},
 			{
@@ -247,7 +189,7 @@ async function submitUserMessage(content: string) {
 		}
 	})
 
-	completion.onFunctionCall('list_stocks', async ({ stocks }) => {
+	completion.onFunctionCall('record_exercise_set', async ({ exerciseSet }) => {
 		reply.update(
 			<BotCard>
 				<StocksSkeleton />
@@ -256,11 +198,9 @@ async function submitUserMessage(content: string) {
 
 		await sleep(1000)
 
-		console.log(stocks)
-
 		reply.done(
 			<BotCard>
-				<Stocks stocks={stocks} />
+				<ExerciseSetFormCard defaultValues={exerciseSet} />
 			</BotCard>
 		)
 
@@ -268,8 +208,8 @@ async function submitUserMessage(content: string) {
 			...aiState.get(),
 			{
 				role: 'function',
-				name: 'list_stocks',
-				content: JSON.stringify(stocks)
+				name: 'record_exercise_set',
+				content: JSON.stringify(exerciseSet)
 			}
 		])
 	})
@@ -288,8 +228,6 @@ async function submitUserMessage(content: string) {
 			)
 
 			await sleep(1000)
-
-			console.log(exercises)
 
 			reply.done(
 				<BotCard>
@@ -312,121 +250,6 @@ async function submitUserMessage(content: string) {
 					role: 'function',
 					name: 'list_exercises',
 					content: JSON.stringify(exercises)
-				}
-			])
-		}
-	)
-
-	completion.onFunctionCall('get_events', async ({ events }) => {
-		reply.update(
-			<BotCard>
-				<EventsSkeleton />
-			</BotCard>
-		)
-
-		await sleep(1000)
-
-		reply.done(
-			<BotCard>
-				<Events events={events} />
-			</BotCard>
-		)
-
-		aiState.done([
-			...aiState.get(),
-			{
-				role: 'function',
-				name: 'list_stocks',
-				content: JSON.stringify(events)
-			}
-		])
-	})
-
-	completion.onFunctionCall(
-		'show_stock_price',
-		async ({
-			symbol,
-			price,
-			delta
-		}: {
-			symbol: string
-			price: number
-			delta: number
-		}) => {
-			reply.update(
-				<BotCard>
-					<StockSkeleton />
-				</BotCard>
-			)
-
-			await sleep(1000)
-
-			reply.done(
-				<BotCard>
-					<Stock name={symbol} price={price} delta={delta} />
-				</BotCard>
-			)
-
-			aiState.done([
-				...aiState.get(),
-				{
-					role: 'function',
-					name: 'show_stock_price',
-					content: `[Price of ${symbol} = ${price}]`
-				}
-			])
-		}
-	)
-
-	completion.onFunctionCall(
-		'show_stock_purchase_ui',
-		({
-			symbol,
-			price,
-			numberOfShares = 100
-		}: {
-			symbol: string
-			price: number
-			numberOfShares?: number
-		}) => {
-			if (numberOfShares <= 0 || numberOfShares > 1000) {
-				reply.done(<BotMessage>Invalid amount</BotMessage>)
-				aiState.done([
-					...aiState.get(),
-					{
-						role: 'function',
-						name: 'show_stock_purchase_ui',
-						content: `[Invalid amount]`
-					}
-				])
-				return
-			}
-
-			reply.done(
-				<>
-					<BotMessage>
-						Sure!{' '}
-						{typeof numberOfShares === 'number'
-							? `Click the button below to purchase ${numberOfShares} shares of $${symbol}:`
-							: `How many $${symbol} would you like to purchase?`}
-					</BotMessage>
-					<BotCard showAvatar={false}>
-						<Purchase
-							defaultAmount={numberOfShares}
-							name={symbol}
-							price={+price}
-						/>
-					</BotCard>
-				</>
-			)
-			aiState.done([
-				...aiState.get(),
-				{
-					role: 'function',
-					name: 'show_stock_purchase_ui',
-					content: `[UI for purchasing ${numberOfShares} shares of ${symbol}. Current price = ${price}, total cost = ${
-						numberOfShares * price
-					}]`
 				}
 			])
 		}

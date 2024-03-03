@@ -7,9 +7,12 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CalendarIcon } from '@radix-ui/react-icons'
 import { format } from 'date-fns'
-import { z } from 'zod'
 
-import { createExerciseSet } from '@/app/(server)/routers/exercise-sets'
+import {
+	createExerciseSet,
+	type ExerciseSet,
+	exerciseSetFormSchema
+} from '@/app/(server)/routers/exercise-sets'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import {
@@ -36,24 +39,6 @@ import {
 import { SubmitButton } from '@/components/ui/submit-button'
 import { cn } from '@/lib/utils'
 
-export const exerciseSetFormSchema = z.object({
-	date: z
-		.date({ invalid_type_error: 'Must be a valid date' })
-		.describe('The date in which the exercise set occurred'),
-	title: z
-		.string()
-		.min(1, { message: 'Required field' })
-		.describe('The name of the exercise'),
-	sets: z.coerce
-		.number()
-		.describe('The number of reps the user did for this exercise'),
-	reps: z.coerce
-		.number()
-		.describe('The number of sets of reps that the user did for this exercise')
-})
-
-export type ExerciseSet = z.infer<typeof exerciseSetFormSchema>
-
 export const ExerciseSetForm = ({
 	defaultValues
 }: {
@@ -70,7 +55,9 @@ export const ExerciseSetForm = ({
 	})
 
 	useEffect(() => {
-		alert(JSON.stringify(state))
+		if (state?.success) {
+			alert(JSON.stringify(state))
+		}
 	}, [state])
 
 	return (
