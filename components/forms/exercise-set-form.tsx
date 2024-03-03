@@ -33,6 +33,7 @@ import {
 	PopoverContent,
 	PopoverTrigger
 } from '@/components/ui/popover'
+import { SubmitButton } from '@/components/ui/submit-button'
 import { cn } from '@/lib/utils'
 
 export const exerciseSetFormSchema = z.object({
@@ -183,7 +184,7 @@ export const ExerciseSetForm = ({
 						)}
 					/>
 				</div>
-				<Button className="w-full md:w-auto">Submit</Button>
+				<SubmitButton className="w-full md:w-auto">Submit</SubmitButton>
 			</form>
 		</Form>
 	)
