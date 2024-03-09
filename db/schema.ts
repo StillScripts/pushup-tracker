@@ -25,6 +25,10 @@ const createdAndUpdated = {
 		.notNull()
 }
 
+/**
+ * TABLES
+ */
+
 /** Table for storing extra data on users. The id matches the auth id */
 export const users = pgTable('users', {
 	id: uuid('id').primaryKey(),
@@ -37,10 +41,12 @@ export const exerciseEvents = pgTable('exercise_events', {
 		.notNull()
 		.primaryKey()
 		.$defaultFn(() => uuidv4()),
-	date: timestamp('date').$defaultFn(() => new Date()),
+	date: timestamp('date')
+		.default(sql`now()`)
+		.notNull(),
 	notes: text('notes'),
 	exerciseCategory: exerciseCategory('exercise_category'),
-	userId: varchar('userId', { length: 36 })
+	userId: uuid('userId')
 		.notNull()
 		.references(() => users.id)
 })
@@ -51,9 +57,11 @@ export const exerciseSessions = pgTable('exercise_sessions', {
 		.notNull()
 		.primaryKey()
 		.$defaultFn(() => uuidv4()),
-	date: timestamp('date').$defaultFn(() => new Date()),
+	date: timestamp('date')
+		.default(sql`now()`)
+		.notNull(),
 	notes: text('notes'),
-	userId: varchar('userId', { length: 36 })
+	userId: uuid('userId')
 		.notNull()
 		.references(() => users.id)
 })
@@ -67,10 +75,10 @@ export const exerciseSets = pgTable('exercise_sets', {
 	reps: integer('reps'),
 	sets: integer('sets').default(1),
 	// By default it will be an event unless an exercise session is created
-	exerciseEventId: varchar('exercise_event_id', { length: 255 }).references(
+	exerciseEventId: uuid('exercise_event_id').references(
 		() => exerciseSessions.id
 	),
-	exerciseSessionId: varchar('exercise_session_id', { length: 255 }).references(
+	exerciseSessionId: uuid('exercise_session_id').references(
 		() => exerciseSessions.id
 	),
 	exerciseTitle: varchar('exercise_title', { length: 255 }).notNull(),
