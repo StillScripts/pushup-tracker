@@ -8,8 +8,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { CalendarIcon } from '@radix-ui/react-icons'
 import { format } from 'date-fns'
 
+import { createExerciseSet } from '@/app/(server)/actions/exercise-sets'
 import {
-	createExerciseSet,
 	type ExerciseSet,
 	exerciseSetFormSchema
 } from '@/app/(server)/routers/exercise-sets'

@@ -1,7 +1,5 @@
 import { z } from 'zod'
 
-import { sleep } from '@/lib/utils'
-
 export const exerciseSetFormSchema = z.object({
 	date: z
 		.date({ invalid_type_error: 'Must be a valid date' })
@@ -19,16 +17,3 @@ export const exerciseSetFormSchema = z.object({
 })
 
 export type ExerciseSet = z.infer<typeof exerciseSetFormSchema>
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const createExerciseSet = async (state: any, formData: FormData) => {
-	await sleep(1000)
-	return {
-		success: true,
-		data: {
-			title: formData.get('title'),
-			sets: formData.get('sets'),
-			reps: formData.get('reps')
-		}
-	}
-}
