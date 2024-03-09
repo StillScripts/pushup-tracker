@@ -15,6 +15,7 @@ const config = {
 		'@typescript-eslint/require-await': 'off',
 		'@typescript-eslint/no-unsafe-call': 'off',
 		'@typescript-eslint/no-unsafe-return': 'off',
+		'@typescript-eslint/no-unsafe-member-access': 'off',
 		'@typescript-eslint/array-type': 'off',
 		'@typescript-eslint/consistent-type-definitions': 'off',
 		'@typescript-eslint/no-empty-interface': 'off',
